@@ -3,18 +3,48 @@
 #include <math.h>
 #include <stdlib.h>
 
-int gcd(int a, int b)
+int powers(long long base, long long n,long long mod)
 {
-	if (b==0)
-		return a;
+    if(n==0)
+       return 1;
+    if(n==1)
+    return base;
+    long long halfn = powers(base, n/2, mod);
+    if(n%2==0)
+        return ( halfn * halfn ) % mod;
+    else
+        return ( ( ( halfn * halfn ) % mod ) * base ) % mod;
+}
+
+int multi_inverse(int n, int mod)
+{
+    return powers(n,mod-2,mod);
+}
+
+long long factorial(int n, int mod)
+{
+	long long temp=1;
+	if (n==0)
+	{
+		return 1;
+	}
+	if (n ==1)
+	{
+		return 1;
+	}
 	else
 	{
-		gcd(b, a%b);
+		return (n*factorial(n-1, mod))%mod;
 	}
+
+
 }
+
+
 int main()
 {
-	int a,b,i,total = 1, denominator = 1;
+	long long total = 1, numerator = 1, denominator = 1, mod = 1000000007;
+	int a, b, i;
 	scanf("%d", &a);
 	scanf("%d", &b);
 
@@ -37,73 +67,36 @@ int main()
 	}
 	else if(a <= 25 && b <= 25)
 	{
-		if (a > b)
+		if (b > a)
 		{
-			for (i=a;i<a+b;i++)
-			{
-				total=total%1000000007;
-				total*=i; 
-			}
-			printf("%lld\n", total);
-			for (i=1;i<=b;i++)
-			{
-				denominator=denominator%1000000007;
-				denominator*=i;
-
-			}
-			printf("%lld\n", denominator);
-			int inv_deno = gcd(1000000007, denominator);
-
-			total = (total * inv_deno)%1000000007;
-	        printf("%lld", total);
+			int temp = b;
+			b = a;
+			a = temp;
 		}
-		else
-		{
-			for (i=b;i<a+b;i++)
-			{
-				total=total%1000000007;
-				total*=i;
-			}
-			for (i=1;i<=a;i++)
-			{
-				denominator*=i;
-			}
-            total = (total/denominator)%1000000007;
-	        printf("%lld", total);
-		}
+		numerator = factorial(a+b-1, mod);
+		denominator = (factorial(b, mod)*factorial(a-1, mod))%mod;
+		total = (numerator * multi_inverse(denominator, mod)) % mod;
+	    printf("%lld", total);
+		
 	}
 	else
 	{
-		if (a > b)
+		numerator = factorial(48, mod);
+		denominator = (factorial(24, mod)*factorial(24, mod))%mod;
+		total = (numerator * multi_inverse(denominator, mod)) % mod;
+		if (b < a)
 		{
-			for (i=a-1;i<a+b-1;i++)
-			{
-				total*=i; 
-			}
-			printf("%lld\n", total);
-			for (i=1;i<=b;i++)
-			{
-				denominator*=i;
+			int temp = b;
+			b = a;
+			a = temp;
+		}
+		a = a-24;
+		total = (total * powers(2, a, mod))%mod;
+		printf("%lld", total);
 
-			}
-			printf("%lld\n", denominator);
-			total = (total/denominator)%1000000007;
-	        printf("%lld", total);
-		}
-		else
-		{
-			for (i=b-1;i<a+b-1;i++)
-			{
-				total*=i;
-			}
-			for (i=1;i<=a;i++)
-			{
-				denominator*=i;
-			}
-            total = (total/denominator)%1000000007;
-	        printf("%lld", total);
-		}
-	}
+
+
+    }
 	
     return 0;
 }
